@@ -1,6 +1,8 @@
 {
     "name": "aerynl/reg-and-auth",
+    "version": "1.0.0",
     "description": "Simple package for registering, activation, authentication and sending password reminders",
+    "homepage": "http://github.com/aerynl/reg-and-auth",
     "type": "library",
     "license": "MIT",
     "keywords": ["laravel", "auth"],
@@ -10,7 +12,6 @@
             "email": "lespavl@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
         "laravel/framework": "~5.1"
     },
