@@ -13,4 +13,5 @@ return [
     'already_activated' => 'De gebruiker is al geactiveerd.',
     'invalid_old_password' => 'Het oude wachtwoord klopt niet.',
     'invalid_new_password' => 'Het nieuwe wachtwoord klopt niet.',
+    'pass_and_confirm_match' => 'De wachtwoorden komt niet overeen.',
 ];

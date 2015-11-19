@@ -13,4 +13,5 @@ return [
     'already_activated' => 'User is already activated.',
     'invalid_old_password' => 'Invalid old password',
     'invalid_new_password' => 'Invalid new password',
+    'pass_and_confirm_match' => 'Password and confirmation password must match',
 ];

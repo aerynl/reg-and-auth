@@ -52,7 +52,10 @@ class RegAuth {
     }
 
     public static function register($user_data) {
-        if(empty($user_data) || !is_array($user_data)) return array('success' => false, 'message' => trans('regauth::messages.error_occurred'));
+        if(empty($user_data) || !is_array($user_data) || empty($user_data['email']) || empty($user_data['password']) || empty($user_data['password_confirmation'] ))
+        return array('success' => false, 'message' => trans('regauth::messages.error_occurred'));
+
+        if($user_data['password_confirmation'] != $user_data['password']) return array('success' => false, 'message' => trans('regauth::messages.pass_and_confirm_match'));
 
         if(!empty($user_data['username'])) {
             $user_model = forward_static_call(array(config('auth.model'), 'where'), 'username', $user_data['username']);
@@ -76,7 +79,7 @@ class RegAuth {
                 $user_data['activated'] = 0;
             }
             $user_data['password'] = Hash::make($user_data['password']);
-            if(isset($user_data['password_confirmation'])) unset($user_data['password_confirmation']);
+            unset($user_data['password_confirmation']);
             $user = forward_static_call(array(config('auth.model'), 'create'), $user_data);
             return array('success' => true, 'user' => $user);
         }
