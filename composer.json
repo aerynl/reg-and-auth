@@ -19,6 +19,5 @@
         "psr-4": {
             "Aerynl\\RegAuth\\": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
