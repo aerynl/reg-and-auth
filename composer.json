@@ -1,5 +1,6 @@
 {
     "name": "aerynl/reg-and-auth",
+    "version": "1.0.0",
     "description": "Simple package for registering, activation, authentication and sending password reminders",
     "homepage": "http://github.com/aerynl/reg-and-auth",
     "type": "library",
