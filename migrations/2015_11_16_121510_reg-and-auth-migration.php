@@ -12,7 +12,30 @@ class RegAndAuthMigration extends Migration
      */
     public function up()
     {
+        if (!Schema::hasColumn('users', 'username')) {
+            Schema::table('users', function($table) {
+                $table->string('username', 100)->nullable();
+            });
+        }
 
+        if (!Schema::hasColumn('users', 'activated')) {
+            Schema::table('users', function($table) {
+                $table->boolean('activated')->default(false);
+            });
+            DB::statement("UPDATE users SET activated = 1");
+        }
+
+        if (!Schema::hasColumn('users', 'activation_code')) {
+            Schema::table('users', function($table) {
+                $table->string('activation_code', 100)->nullable();
+            });
+        }
+
+        if (!Schema::hasColumn('users', 'reset_password_code')) {
+            Schema::table('users', function($table) {
+                $table->string('reset_password_code', 100)->nullable();
+            });
+        }
     }
 
     /**
