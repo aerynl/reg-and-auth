@@ -67,7 +67,7 @@ class RegAuth {
 
         if ($existing_user) return array('success' => false, 'message' => trans('regauth::messages.user_exists'));
 
-        $validator = Validator::make($user_data, User::$rules);
+        $validator = Validator::make($user_data, forward_static_call(array(config('auth.model'), 'rules')));
 
         if (!$validator->passes()) {
             return array('success' => false, 'message' => trans('regauth::messages.validation_errors_occurred'), 'error' => $validator->messages());
@@ -79,7 +79,7 @@ class RegAuth {
                 $user_data['activated'] = 0;
             }
             $user_data['password'] = Hash::make($user_data['password']);
-            unset($user_data['password_confirmation']);
+            if(isset($user_data['password_confirmation'])) unset($user_data['password_confirmation']);
             $user = forward_static_call(array(config('auth.model'), 'create'), $user_data);
             return array('success' => true, 'user' => $user);
         }
