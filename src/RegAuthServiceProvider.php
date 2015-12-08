@@ -26,8 +26,6 @@ class RegAuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom( __DIR__.'/../config/regauth.php', 'regauth');
-
         $this->app['regauth'] = $this->app->share(function($app){
             return new RegAuth();
         });
