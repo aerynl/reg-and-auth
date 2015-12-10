@@ -20,10 +20,12 @@ class RegAuth {
         $user = $user_model->orWhere('email', $username)->first();
 
         if (!$user) return array('success' => false, 'message' => trans('regauth::messages.no_such_user'));
-
         if (!$user->activated) return array('success' => false, 'message' => trans('regauth::messages.user_not_activated'));
 
-        if (!Auth::attempt(['email' => $user->email, 'password' => $password, 'activated' => 1], $remember == 1)) {
+        // to skip mutations
+        $user_attrs = $user->getAttributes();
+
+        if (!Auth::attempt(['email' => $user_attrs['email'], 'password' => $password, 'activated' => 1], $remember == 1)) {
             return array('success' => false, 'message' => trans('regauth::messages.wrong_login_password'));
         }
 
@@ -53,7 +55,7 @@ class RegAuth {
 
     public static function register($user_data) {
         if(empty($user_data) || !is_array($user_data) || empty($user_data['email']) || empty($user_data['password']) || empty($user_data['password_confirmation'] ))
-        return array('success' => false, 'message' => trans('regauth::messages.error_occurred'));
+            return array('success' => false, 'message' => trans('regauth::messages.error_occurred'));
 
         if($user_data['password_confirmation'] != $user_data['password']) return array('success' => false, 'message' => trans('regauth::messages.pass_and_confirm_match'));
 
@@ -75,12 +77,17 @@ class RegAuth {
 
         try {
             if(empty($user_data['activated'])) {
-                $user_data['activation_code'] = str_random(16);
                 $user_data['activated'] = 0;
             }
             $user_data['password'] = Hash::make($user_data['password']);
             if(isset($user_data['password_confirmation'])) unset($user_data['password_confirmation']);
             $user = forward_static_call(array(config('auth.model'), 'create'), $user_data);
+
+            if(empty($user_data['activated'])) {
+                $user->activation_code = str_random(16);
+                $user->update();
+            }
+
             return array('success' => true, 'user' => $user);
         }
         catch (\Exception $e) {
