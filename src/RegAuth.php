@@ -29,6 +29,9 @@ class RegAuth {
             return array('success' => false, 'message' => trans('regauth::messages.wrong_login_password'));
         }
 
+        $user->last_login = date('Y-m-d H:i:s');
+        $user->update();
+
         return array('success' => true);
     }
 
@@ -104,6 +107,7 @@ class RegAuth {
 
         $user->activation_code = null;
         $user->activated = 1;
+        $user->activated_at = date('Y-m-d H:i:s');
         $user->update();
 
         return array('success' => true, 'user' => $user);
