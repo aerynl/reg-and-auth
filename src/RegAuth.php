@@ -40,7 +40,7 @@ class RegAuth {
             return array('success' => false, 'message' => trans('regauth::messages.all_fields_are_required'));
         }
 
-        $user = forward_static_call(array(config('auth.model'), 'find'), $id);
+        $user = forward_static_call(array(config('auth.providers.users.model'), 'find'), $id);
         if (!$user) return array('success' => false, 'message' => trans('regauth::messages.no_such_user'));
 
         if (!$user->activated) return array('success' => false, 'message' => trans('regauth::messages.user_not_activated'));
@@ -63,16 +63,16 @@ class RegAuth {
         if($user_data['password_confirmation'] != $user_data['password']) return array('success' => false, 'message' => trans('regauth::messages.pass_and_confirm_match'));
 
         if(!empty($user_data['username'])) {
-            $user_model = forward_static_call(array(config('auth.model'), 'where'), 'username', $user_data['username']);
+            $user_model = forward_static_call(array(config('auth.providers.users.model'), 'where'), 'username', $user_data['username']);
             $existing_user = $user_model->orWhere('email', $user_data['email'])->first();
         } else {
-            $user_model = forward_static_call(array(config('auth.model'), 'where'), 'email', $user_data['email']);
+            $user_model = forward_static_call(array(config('auth.providers.users.model'), 'where'), 'email', $user_data['email']);
             $existing_user = $user_model->first();
         }
 
         if ($existing_user) return array('success' => false, 'message' => trans('regauth::messages.user_exists'));
 
-        $validator = Validator::make($user_data, forward_static_call(array(config('auth.model'), 'rules')));
+        $validator = Validator::make($user_data, forward_static_call(array(config('auth.providers.users.model'), 'rules')));
 
         if (!$validator->passes()) {
             return array('success' => false, 'message' => trans('regauth::messages.validation_errors_occurred'), 'error' => $validator->messages());
@@ -84,7 +84,7 @@ class RegAuth {
             }
             $user_data['password'] = Hash::make($user_data['password']);
             if(isset($user_data['password_confirmation'])) unset($user_data['password_confirmation']);
-            $user = forward_static_call(array(config('auth.model'), 'create'), $user_data);
+            $user = forward_static_call(array(config('auth.providers.users.model'), 'create'), $user_data);
 
             if(empty($user_data['activated'])) {
                 $user->activation_code = str_random(16);
@@ -101,7 +101,7 @@ class RegAuth {
 
     public static function activate($hash) {
         if (empty($hash)) return Response::json(array('success' => false, 'message' => trans('regauth::messages.error_occurred')));
-        $user_model = forward_static_call(array(config('auth.model'), 'where'), 'activation_code', $hash);
+        $user_model = forward_static_call(array(config('auth.providers.users.model'), 'where'), 'activation_code', $hash);
         $user = $user_model->where('activated', '=', '0')->first();
         if(!$user) return array('success' => false, 'message' => trans('regauth::messages.invalid_activation_code'));
 
@@ -116,7 +116,7 @@ class RegAuth {
     public static function generateForgotPassHash($username) {
         if(empty($username)) return array('success' => false, 'message' => trans('regauth::messages.all_fields_are_required'));
 
-        $user_model = forward_static_call(array(config('auth.model'), 'where'), 'username', $username);
+        $user_model = forward_static_call(array(config('auth.providers.users.model'), 'where'), 'username', $username);
         $user = $user_model->orWhere('email', $username)->first();
         if (!$user) return array('success' => false, 'message' => trans('regauth::messages.no_such_user'));
 
@@ -129,7 +129,7 @@ class RegAuth {
     public static function processForgotPassHash($hash) {
         if (empty($hash)) return Response::json(array('success' => false, 'message' => trans('regauth::messages.error_occurred')));
 
-        $user_model = forward_static_call(array(config('auth.model'), 'where'), 'reset_password_code', $hash);
+        $user_model = forward_static_call(array(config('auth.providers.users.model'), 'where'), 'reset_password_code', $hash);
         $user = $user_model->first();
         if(!$user) return array('success' => false, 'message' => trans('regauth::messages.invalid_password_reset'));
 
@@ -148,7 +148,7 @@ class RegAuth {
     public static function changePass($pass_data, $user_id) {
         if (empty($user_id) || empty($pass_data)) return array('success' => false, 'message' => trans('regauth::messages.error_occurred'));
 
-        $user = forward_static_call(array(config('auth.model'), 'find'), $user_id);
+        $user = forward_static_call(config('auth.providers.users.model'), 'find'), $user_id);
         if (empty($user)) return array('success' => false, 'message' => trans('regauth::messages.no_such_user'));
 
         if (!Hash::check($pass_data['old_password'], $user->password)) {
