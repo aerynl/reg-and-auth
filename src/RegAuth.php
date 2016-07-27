@@ -16,7 +16,7 @@ class RegAuth {
             return array('success' => false, 'message' => trans('regauth::messages.all_fields_are_required'));
         }
 
-        $user_model = forward_static_call(array(config('auth.model'), 'where'), 'username', $username);
+        $user_model = forward_static_call(array(config('auth.providers.users.model'), 'where'), 'username', $username);
         $user = $user_model->orWhere('email', $username)->first();
 
         if (!$user) return array('success' => false, 'message' => trans('regauth::messages.no_such_user'));
