@@ -148,7 +148,7 @@ class RegAuth {
     public static function changePass($pass_data, $user_id) {
         if (empty($user_id) || empty($pass_data)) return array('success' => false, 'message' => trans('regauth::messages.error_occurred'));
 
-        $user = forward_static_call(config('auth.providers.users.model'), 'find'), $user_id);
+        $user = forward_static_call(array(config('auth.providers.users.model'), 'find'), $user_id);
         if (empty($user)) return array('success' => false, 'message' => trans('regauth::messages.no_such_user'));
 
         if (!Hash::check($pass_data['old_password'], $user->password)) {
